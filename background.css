@@ -1,0 +1,12 @@
+body{
+    background: blueviolet;
+}
+
+div.app{
+    position: absolute;
+}
+
+input{
+    margin-top: 4vh;
+    margin-left: 45vw;
+}

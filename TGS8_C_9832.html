@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="vue.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <title>Tugas 8 _ PAW C _ 180709832</title>
+</head>
+<body>
+    <style>
+
+        body{
+            font-weight: bold;
+        }
+        .todo_list {
+            display: flex;
+            flex-direction: column-reverse;
+          width:400px;
+        }
+        .todo_item {
+          padding-left: 1.4vw;
+          padding-top: 2vh;
+          margin-top: 3vh;
+          display:flex;
+          flex-direction:column;
+          justify-content:space-between;
+          height: 20vh;
+          background-color: black;
+        }
+
+        .tomboltodo{
+            display:flex;
+            flex-direction:row;
+            justify-content:space-between;
+            padding: 1vw;
+        }
+
+        .Penting {
+          color:red;
+        }
+        .Biasa {
+          color:skyblue;
+        }
+        .Tidak_Penting {
+          color:lightgreen;
+        }
+        .completed {
+          text-decoration:line-through;
+        }
+
+        body, html{
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        canvas { 
+            position: absolute;
+            z-index: -1;
+            overflow: hidden;
+            width:100vw;
+            height:100vh;
+            background-color:lightgoldenrodyellow;
+        }
+
+        div.app{
+            position: absolute;
+        }
+
+        .containinput{
+            margin-top: 4vh;
+            margin-left: 39vw;
+        }
+
+        .hasiloutput{
+            height: 40vh;
+            overflow: auto;
+            margin-left: 38%;
+            margin-top: 4%;
+            width:419px ;
+        }
+        .topwhite{
+            margin-left: 2vw;
+            width: 335px;
+            background: black;
+            padding-left: 1vw;
+            padding-top: 1.2vw;
+            padding-bottom: 4vh;
+        }
+
+        .btn-primary{
+            margin-left:28%;
+            margin-top: 6%;
+        }
+        textarea {
+            resize: none;
+        }
+
+        svg{
+            color: red;
+            font-weight: bolder;
+            font-size: larger;
+        }
+
+        h1.teks{
+            color: yellow;
+        }
+
+        span.teks{
+            color:white;
+        }
+
+        h3, span.author{
+            color: white;
+        }
+
+        .author{
+            margin-left:10%;
+            margin-top: 6%; 
+        }
+
+
+    </style>
+
+    <canvas id="test"></canvas>
+
+    <div id="app">
+        <div class="containinput">
+            <div class="topwhite">
+                <h3>To Do List |
+                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-down-short" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z"/>
+                    </svg>
+                </h3><br>
+                <input type="text" v-model="input_todo" placeholder="Judul Kegiatan"/>
+                    <select v-model="input_priority">
+                        <option v-for="priority in priorities" v-bind:value="priority">{{ priority }}</option>
+                    </select>
+                <br><br>
+                <textarea cols="39" rows="4" v-model="input_desc" placeholder="Keterangan Kegiatan"></textarea>
+                <button class="btn btn-primary" v-on:click="addTodo">Tambahkan List</button><br><br>
+                <span class="author">{{ author }}</span>
+            </div>
+        </div>
+        <div class="hasiloutput">
+            <ul class="todo_list">
+                <li v-for="(todo, index) in todos">
+                  <div class="todo_item">
+                    <span v-bind:class="todo.priority">Prioritas {{ todo.priority }}</span>
+                    <h1 class="teks" v-bind:class="{completed: todo.completed}">{{ todo.text }}</h1>
+                    <span class="teks" v-bind:class="{completed: todo.completed}">{{ todo.text2 }}</span>
+                    <div class="tomboltodo">
+                        <span><button v-on:click="completeTodo(index)">Selesai Dikerjakan</button></span>
+                        <span><button v-on:click="deleteTodo(index)">Hapus Daftar</button></span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+        </div>
+    </div>
+
+    <script>
+        // Vue.js untuk Tugas To Do List
+        var app = new Vue({
+        el: '#app',
+        data: {
+          input_todo: '',
+          input_desc: '',
+          input_priority: 'Biasa',
+          author: "Virtus Tan | 180709832 | PAW C",
+          priorities: ['Penting', 'Biasa', 'Tidak_Penting'],
+          todos: []
+        },
+        methods: {
+          addTodo: function() {
+            this.todos.push({
+              text: this.input_todo,
+              text2: this.input_desc,
+              priority: this.input_priority,
+              completed: false
+            })
+            this.input_todo = ''
+            this.input_desc = ''
+            this.saveTodos()
+          },
+          deleteTodo: function(index) {
+            this.todos.splice(index, 1)
+            this.saveTodos()
+          },
+          completeTodo: function(index) {
+            this.todos[index].completed = true
+          },
+          saveTodos: function() {
+            localStorage.setItem('todos', JSON.stringify(this.todos))
+          }
+        },
+        created: function() {
+          let todos = localStorage.getItem('todos')
+          console.log(todos)
+          if (todos) {
+            this.todos = JSON.parse(todos)
+          }
+        }
+      })
+
+    // Javascript Untuk Background
+      var w = window.innerWidth,
+    h = window.innerHeight,
+    canvas = document.getElementById('test'),
+    ctx = canvas.getContext('2d'),
+    rate = 60,
+    arc = 100,
+    time,
+    count,
+    size = 7,
+    speed = 20,
+    parts = new Array,
+    colors = ['red','#f57900','yellow','#ce5c00','#5c3566'];
+    var mouse = { x: 0, y: 0 };
+
+    canvas.setAttribute('width',w);
+    canvas.setAttribute('height',h);
+
+    function create() {
+    time = 0;
+    count = 0;
+
+    for(var i = 0; i < arc; i++) {
+    parts[i] = {
+      x: Math.ceil(Math.random() * w),
+      y: Math.ceil(Math.random() * h),
+      toX: Math.random() * 5 - 1,
+      toY: Math.random() * 2 - 1,
+      c: colors[Math.floor(Math.random()*colors.length)],
+      size: Math.random() * size
+            }
+        }
+    }
+
+function particles() {
+  ctx.clearRect(0,0,w,h);
+   canvas.addEventListener('mousemove', MouseMove, false);
+  for(var i = 0; i < arc; i++) {
+    var li = parts[i];
+    var distanceFactor = DistanceBetween( mouse, parts[i] );
+    var distanceFactor = Math.max( Math.min( 15 - ( distanceFactor / 10 ), 10 ), 1 );
+    ctx.beginPath();
+    ctx.arc(li.x,li.y,li.size*distanceFactor,0,Math.PI*2,false);
+    ctx.fillStyle = li.c;
+    ctx.strokeStyle=li.c;
+    if(i%2==0)
+      ctx.stroke();
+    else
+      ctx.fill();
+    
+    li.x = li.x + li.toX * (time * 0.05);
+    li.y = li.y + li.toY * (time * 0.05);
+    
+    if(li.x > w){
+       li.x = 0; 
+    }
+    if(li.y > h) {
+       li.y = 0; 
+    }
+    if(li.x < 0) {
+       li.x = w; 
+    }
+    if(li.y < 0) {
+       li.y = h; 
+    }
+   
+     
+  }
+        if(time < speed) {
+        time++;
+        }
+            setTimeout(particles,1000/rate);
+        }
+            function MouseMove(e) {
+            mouse.x = e.layerX;
+            mouse.y = e.layerY;
+        }
+            function DistanceBetween(p1,p2) {
+            var dx = p2.x-p1.x;
+            var dy = p2.y-p1.y;
+            return Math.sqrt(dx*dx + dy*dy);
+        }
+        create();
+        particles();
+    </script>
+</body>
+</html>
